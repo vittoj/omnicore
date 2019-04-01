@@ -1843,7 +1843,7 @@ UniValue omni_getactivedexsells(const UniValue& params, bool fHelp)
 
 UniValue omni_listblocktransactions(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
             "omni_listblocktransactions index\n"
             "\nLists all Omni transactions in a block.\n"
@@ -1864,6 +1864,15 @@ UniValue omni_listblocktransactions(const UniValue& params, bool fHelp)
 
     RequireHeightInChain(blockHeight);
 
+    int verbosity = 0;
+    if (params.size() > 1) {
+        if (params[1].isNum()) {
+            verbosity = params[1].get_int();
+        } else {
+            verbosity = params[1].get_bool() ? 1 : 0;
+        }
+    }
+
     // next let's obtain the block for this height
     CBlock block;
     {
@@ -1883,10 +1892,16 @@ UniValue omni_listblocktransactions(const UniValue& params, bool fHelp)
     LOCK(cs_tally);
 
     BOOST_FOREACH(const CTransaction&tx, block.vtx) {
-        if (pDbTransactionList->exists(tx.GetHash())) {
-            // later we can add a verbose flag to decode here, but for now callers can send returned txids into gettransaction_MP
-            // add the txid into the response as it's an MP transaction
-            response.push_back(tx.GetHash().GetHex());
+        uint256 hash = tx.GetHash();
+        if (pDbTransactionList->exists(hash)) {
+            if (verbosity <= 0) {
+                response.push_back(hash.GetHex());
+            } else {
+                UniValue txobj(UniValue::VOBJ);
+                int populateResult = populateRPCTransactionObject(hash, txobj);
+                if (populateResult != 0) PopulateFailure(populateResult);
+                response.push_back(txobj);
+            }
         }
     }
 
