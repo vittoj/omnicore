@@ -125,6 +125,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "omni_listtransactions", 4 },
     { "omni_getallbalancesforid", 0 },
     { "omni_listblocktransactions", 0 },
+    { "omni_listblocktransactions", 1 },
     { "omni_listblockstransactions", 0 },
     { "omni_listblockstransactions", 1 },
     { "omni_getorderbook", 0 },
