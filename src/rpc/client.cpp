@@ -186,6 +186,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "omni_listtransactions", 4, "endblock" },
     { "omni_getallbalancesforid", 0, "propertyid" },
     { "omni_listblocktransactions", 0, "index" },
+    { "omni_listblocktransactions", 1, "verbose" },
     { "omni_listblockstransactions", 0, "firstblock" },
     { "omni_listblockstransactions", 1, "lastblock" },
     { "omni_getorderbook", 0, "propertyid" },
